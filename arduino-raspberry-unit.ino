@@ -1,7 +1,7 @@
 /*
-   This program can receive data from a Raspberry configured with Node-Red, and send some codes with 433 Mhz sender, and
+   This program can receive data from a Banana Pi configured with Node-Red, and send some codes with 433 Mhz sender, and
    he can also send data to Raspberry (also with Node-Red), data is coming from a CO2 sensor, that use a library that
-   need to be configured with value here :
+   need to be configured with value on this website :
    https://www.esrl.noaa.gov/gmd/ccgg/trends/gl_trend.html
 */
 
@@ -15,7 +15,7 @@ RCSwitch transmitter = RCSwitch();
 // Constant fields
 //==========================================
 
-//Constants for 433 MHz module
+//Constants for 433 MHz module, in my case the module is soldered on the arduino (not the best way)
 #define NEGATIVE_433_PIN 6
 #define POSITIVE_433_PIN 5
 #define DATA_433_PIN 4
@@ -24,7 +24,7 @@ RCSwitch transmitter = RCSwitch();
 
 #define MOV_SENSOR 3    // Movement sensor to automatically power on light
 
-#define mq135Pin A7     // Pin connected to MQ135
+#define MQ135_PIN A7     // Pin connected to MQ135
 
 // Used to control remote outlet with 433 MHz, this is the 3 firsts outlets with the same code for On and Off
 #define REMOTE_OUTLET_1 5330371
@@ -51,7 +51,7 @@ RCSwitch transmitter = RCSwitch();
 // fields
 //==========================================
 
-MQ135 gasSensor = MQ135(mq135Pin);  // Initialize object MQ135 on the specified pin
+MQ135 gasSensor = MQ135(MQ135_PIN);  // Initialize object MQ135 on the specified pin
 long currentTime;
 
 //==========================================
@@ -60,7 +60,7 @@ long currentTime;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(9600); // serial connection with the Banana Pi
 
   pinMode(NEGATIVE_433_PIN, OUTPUT);
   digitalWrite(NEGATIVE_433_PIN, LOW);
@@ -87,6 +87,7 @@ void setup()
 
 void loop()
 {
+  // If the Pi has sended infos, decode data
   if (Serial.available())
     sendData433(Serial.readString());
 
@@ -155,7 +156,7 @@ void sendData433(String comSerie)
 }
 
 //==========================================
-// Led Confirmation Method
+// Led Confirmation Method (debug purpose)
 //==========================================
 
 void confirmWithLed()
@@ -192,7 +193,7 @@ void somethingDetected() // Need to change this, now is for debug only
 }
 
 //==========================================
-// Json Method
+// Json Method, send to Pi
 //==========================================
 
 void sendJsonToSerial(String source, String data)
